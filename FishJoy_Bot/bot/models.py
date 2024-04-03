@@ -142,3 +142,18 @@ class Feedback(models.Model):
         verbose_name = 'Feedback'
         verbose_name_plural = 'Feedback'
         ordering = ['name']
+
+
+class BotUser(models.Model):
+    telegram_id = models.PositiveBigIntegerField(unique=True, db_index=True)
+    first_name = models.CharField(max_length=50, db_index=True)
+    last_name = models.CharField(max_length=50, db_index=True)
+    username = models.CharField(max_length=50, db_index=True)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'Bot user'
+        verbose_name_plural = 'Bot users'
+        ordering = ['first_name']

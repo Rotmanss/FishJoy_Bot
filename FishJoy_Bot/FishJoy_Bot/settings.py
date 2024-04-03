@@ -78,7 +78,7 @@ WSGI_APPLICATION = 'FishJoy_Bot.wsgi.application'
 DATABASES = {
     'default': {
        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'bot',
+        'NAME': 'spots',
         'USER': 'postgres',
         'PASSWORD': 'asdasd123123',
         'HOST': '127.0.0.1',
@@ -132,4 +132,38 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
 
+# Telegram
 TOKEN_BOT = '6316610340:AAFDHGWaxmpcPyM1XYAFOXxRhuxtdr85cjI'
+LOG_LEVEL = DEBUG
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "{levelname} {asctime} {module} {process:d} {thread:d} {message}",
+            "style": "{",
+        },
+        "simple": {
+            "format": "{levelname} {message}",
+            "style": "{",
+        },
+    },
+    "handlers": {
+        "console": {
+            "level": LOG_LEVEL,
+            "class": "logging.StreamHandler",
+            "formatter": "simple",
+        },
+    },
+    "root": {
+      "handlers": ["console"],
+      "level": LOG_LEVEL
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["console"],
+            "propagate": True,
+        },
+    },
+}
