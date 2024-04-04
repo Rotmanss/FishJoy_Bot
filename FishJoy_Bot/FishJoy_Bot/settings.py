@@ -78,7 +78,7 @@ WSGI_APPLICATION = 'FishJoy_Bot.wsgi.application'
 DATABASES = {
     'default': {
        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'spots',
+        'NAME': 'fishjoy_bot',
         'USER': 'postgres',
         'PASSWORD': 'asdasd123123',
         'HOST': '127.0.0.1',

@@ -46,15 +46,11 @@ class SpotsHandler(Handler):
 
             self.bot.send_photo(message.chat.id, message.photo[0].file_id)
             spot = Spots.objects.create(title=result[0].strip(),
-                                        slug=result[1].strip(),
-                                        rating=result[2].strip(),
-                                        location=result[3].strip(),
+                                        location=result[1].strip(),
                                         photo=message.photo[0].file_id,
-                                        max_depth=result[4].strip(),
-                                        likes=result[5].strip(),
-                                        dislikes=result[6].strip(),
-                                        spot_category_id=result[7].strip(),
-                                        user_id=result[7].strip())
+                                        max_depth=result[2].strip(),
+                                        spot_category_id=result[3].strip(),
+                                        user_id=result[4].strip())
             spot.save()
         except:
             self.bot.send_message(message.chat.id, 'You entered data incorrectly')

@@ -46,11 +46,10 @@ class FishHandler(Handler):
 
             self.bot.send_photo(message.chat.id, message.photo[0].file_id)
             fish = Fish.objects.create(name=result[0].strip(),
-                                        slug=result[1].strip(),
                                         photo=message.photo[0].file_id,
-                                        average_weight=result[2].strip(),
-                                        user_id=result[3].strip(),
-                                        fish_category_id=result[4].strip())
+                                        average_weight=result[1].strip(),
+                                        user_id=result[2].strip(),
+                                        fish_category_id=result[3].strip())
             fish.save()
         except:
             self.bot.send_message(message.chat.id, 'You entered data incorrectly')

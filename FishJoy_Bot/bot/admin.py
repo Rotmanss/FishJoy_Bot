@@ -14,17 +14,17 @@ class FishAdmin(admin.ModelAdmin):
 
 @admin.register(Baits)
 class BaitsAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'slug', 'price')
+    list_display = ('id', 'name', 'price')
 
 
 @admin.register(SpotCategory)
 class SpotCategoryAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'slug')
+    list_display = ('id', 'name')
 
 
 @admin.register(FishCategory)
 class FishCategoryAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'slug')
+    list_display = ('id', 'name')
 
 
 @admin.register(Feedback)

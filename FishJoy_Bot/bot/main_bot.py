@@ -5,20 +5,14 @@ from telebot.async_telebot import types
 
 from django.conf import settings
 
-from bot.middleware import CustomMiddleware
-
 from bot.handlers.spots_handler import SpotsHandler
 from bot.handlers.fish_handler import FishHandler
 from bot.handlers.baits_handler import BaitsHandler
-
-# from FishJoy_Bot.database.spots_crud import add_spot
 
 bot = telebot.TeleBot(settings.TOKEN_BOT, parse_mode='HTML')
 telebot.logger.setLevel(settings.LOG_LEVEL)
 
 logger = logging.getLogger(__name__)
-
-bot.setup_middleware(CustomMiddleware())
 
 
 @bot.message_handler(commands=['start'])
