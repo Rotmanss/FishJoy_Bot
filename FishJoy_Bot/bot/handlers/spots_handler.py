@@ -1,6 +1,7 @@
 from bot.handlers.base_nadler import Handler
 from bot.models import Spots
 
+from django.contrib.auth.models import User
 import re
 
 
@@ -27,10 +28,6 @@ class SpotsHandler(Handler):
         return list(Spots.objects.all().values())
 
     def add_record(self, message):
-        print('CHEEEEEEEEKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK')
-        print('SUCCESSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS', message.caption)
-
-        print('HERRRRRRRRREEEEEEEEEEEEEEEEE', message)
         if not message.photo:
             self.bot.send_message(message.chat.id, 'Provide a photo')
             return
@@ -42,7 +39,6 @@ class SpotsHandler(Handler):
             result = re.findall(pattern, input_string)
 
             print('RESUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUULT', result)
-            print('PHOOOOOOOOOOOTOOOOOOOOOOOOOOOOOO', message.photo)
 
             self.bot.send_photo(message.chat.id, message.photo[0].file_id)
             spot = Spots.objects.create(title=result[0].strip(),
@@ -50,7 +46,7 @@ class SpotsHandler(Handler):
                                         photo=message.photo[0].file_id,
                                         max_depth=result[2].strip(),
                                         spot_category_id=result[3].strip(),
-                                        user_id=result[4].strip())
+                                        user_id=User.objects.get(username=str(message.from_user.id)).id)
             spot.save()
         except:
             self.bot.send_message(message.chat.id, 'You entered data incorrectly')

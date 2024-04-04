@@ -1,6 +1,7 @@
 from bot.handlers.base_nadler import Handler
 from bot.models import Fish
 
+from django.contrib.auth.models import User
 import re
 
 
@@ -48,8 +49,8 @@ class FishHandler(Handler):
             fish = Fish.objects.create(name=result[0].strip(),
                                         photo=message.photo[0].file_id,
                                         average_weight=result[1].strip(),
-                                        user_id=result[2].strip(),
-                                        fish_category_id=result[3].strip())
+                                        user_id=User.objects.get(username=str(message.from_user.id)).id,
+                                        fish_category_id=result[2].strip())
             fish.save()
         except:
             self.bot.send_message(message.chat.id, 'You entered data incorrectly')
