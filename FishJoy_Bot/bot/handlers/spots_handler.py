@@ -62,7 +62,7 @@ class SpotsHandler(Handler):
     def update_record(self, field_name, new_value):
         update_dict = {field_name: new_value}
         Spots.objects.update(**update_dict)
-        print('test')
+        print('sadfjlaksdjflaksjdflajsklf')
         # spot_instance = Spots.objects.get(unique_identifier="value")  # Adjust this based on your model's unique identifier
         #
         # # Update the specific field
