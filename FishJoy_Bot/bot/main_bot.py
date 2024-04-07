@@ -3,17 +3,18 @@ import logging
 import telebot
 from telebot.async_telebot import types
 
+from bot.father_bot import bot
+
 from django.conf import settings
 from django.contrib.auth.models import User
 
-from bot.handlers.spots_handler import SpotsHandler
-from bot.handlers.fish_handler import FishHandler
-from bot.handlers.baits_handler import BaitsHandler
-
 from bot.validators import is_telegram_user_registered
 
+from bot.callbacks.spots_callbacks import handle_get_spots, handle_add_spots, handle_edit_spots, handle_delete_spots
+from bot.callbacks.fish_callbacks import handle_get_fish, handle_add_fish, handle_edit_fish, handle_delete_fish
+from bot.callbacks.baits_callbacks import handle_get_baits, handle_add_baits
 
-bot = telebot.TeleBot(settings.TOKEN_BOT, parse_mode='HTML')
+
 telebot.logger.setLevel(settings.LOG_LEVEL)
 
 logger = logging.getLogger(__name__)
@@ -47,84 +48,9 @@ def start_handler(message):
     bot.send_message(message.chat.id, f'Hello, {message.from_user.first_name}, here are your options:', reply_markup=keyboard)
 
 
-# SPOTS
-@bot.callback_query_handler(func=lambda call: call.data == 'spots')
-def handle_get_spots(callback):
-    spots_handler = SpotsHandler(bot, callback.message)
-    spots_handler.get_all_records(callback.from_user.id)
-
-
-@bot.callback_query_handler(func=lambda call: call.data == 'add_spot')
-def handle_add_spots(callback):
-    spots_handler = SpotsHandler(bot, callback.message)
-    sent = bot.send_message(callback.message.chat.id, 'Input spot details like this ..., separated with semicolon')
-
-    bot.register_next_step_handler(sent, spots_handler.add_record)
-
-
-@bot.callback_query_handler(func=lambda call: call.data == 'edit_spot')
-def handle_edit_spots(callback):
-    keyboard = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True)
-    keyboard.add(telebot.types.KeyboardButton('title'),
-                 telebot.types.KeyboardButton('Field 2'),
-                 telebot.types.KeyboardButton('Field 3'))
-    bot.send_message(callback.message.chat.id, "Which field do you want to edit?", reply_markup=keyboard)
-    bot.register_next_step_handler(callback.message, process_selected_field)
-
-
-def process_selected_field(message):
-    field_name = message.text
-    bot.send_message(message.chat.id, f"Please enter the new value for {field_name}")
-    bot.register_next_step_handler(message, lambda m: update_field(m, field_name))
-
-
-def update_field(message, field_name):
-    new_value = message.text
-
-    spots_handler = SpotsHandler(bot, message)
-    spots_handler.update_record(field_name, new_value)
-
-    bot.send_message(message.chat.id, f"{field_name.capitalize()} has been updated to {new_value}.")
-
-
-@bot.callback_query_handler(func=lambda call: call.data == 'delete_spot')
-def handle_delete_spots(callback):
-    # spots_handler = SpotsHandler(bot, callback.message)
-    # sent = bot.send_message(callback.message.chat.id, 'Input spot details like this ..., separated with semicolon')
-    #
-    # bot.register_next_step_handler(sent, spots_handler.add_record)
-    print('NIIIIIIIIIIIIIIIIIIIIIIIICCCCCCCCCCCCE')
-
-
-# FISH
-@bot.callback_query_handler(func=lambda call: call.data == 'fish')
-def handle_get_fish(callback):
-    fish_handler = FishHandler(bot, callback.message)
-    fish_handler.get_all_records()
-
-
-@bot.callback_query_handler(func=lambda call: call.data == 'add_fish')
-def handle_add_fish(callback):
-    fish_handler = FishHandler(bot, callback.message)
-    sent = bot.send_message(callback.message.chat.id, 'Input spot details like this ..., separated with semicolon')
-
-    bot.register_next_step_handler(sent, fish_handler.add_record)
-
-
-# BAITS
-@bot.callback_query_handler(func=lambda call: call.data == 'baits')
-def handle_get_baits(callback):
-    baits_handler = BaitsHandler(bot, callback.message)
-    baits_handler.get_all_records()
-
-
-@bot.callback_query_handler(func=lambda call: call.data == 'add_bait')
-def handle_add_baits(callback):
-    baits_handler = BaitsHandler(bot, callback.message)
-    sent = bot.send_message(callback.message.chat.id, 'Input spot details like this ..., separated with semicolon')
-
-    bot.register_next_step_handler(sent, baits_handler.add_record)
-
+@bot.message_handler(func=lambda message: True)
+def echo_message(message):
+    bot.reply_to(message, 'Press a button and select what you want to do')
 
 # @bot.message_handler(content_types=['text'])
 # def main_menu(message):
@@ -172,6 +98,3 @@ def handle_add_baits(callback):
 #     bot.send_message(message.chat.id, text=f'Your data {message.text}')
 #
 #
-# @bot.message_handler(func=lambda message: True)
-# def echo_message(message):
-#     bot.reply_to(message, message.text)

@@ -3,6 +3,7 @@ from bot.models import Fish
 
 from django.contrib.auth.models import User
 import re
+from telebot.async_telebot import types
 
 
 class FishHandler(Handler):
@@ -13,13 +14,31 @@ class FishHandler(Handler):
     def get_all_records(self, current_user_id):
         result = ''
         photo = 'AgACAgIAAxkBAAPmZgp3cwABhLE4BMdIQaTVrttbKafQAALZ4zEbOEZQSGkjdNm_ZtTWAQADAgADcwADNAQ'
-        for spot in self._get_from_db():
-            for key, value in spot.items():
+        for fish in self._get_from_db():
+            for key, value in fish.items():
                 if key == 'photo':
                     photo = f'{value}'
                     continue
+
+                if key == 'id':
+                    id = value
+                    continue
+
+                if key == 'time_create' or key == 'time_update':
+                    value = value.strftime('%B %d, %Y %I:%M %p')
+
+                keyboard = types.InlineKeyboardMarkup(row_width=2)
+                if key == 'user_id' and str(value) == str(User.objects.get(username=current_user_id).id):
+                    edit = types.InlineKeyboardButton("Edit fish", callback_data=f"edit_fish_{id}")
+                    delete = types.InlineKeyboardButton("Delete fish", callback_data=f"delete_fish_{id}")
+                    keyboard.add(edit, delete)
+                    continue
+                elif key == 'user_id':
+                    continue
+
                 result += f'<b>{key}</b> : {value}\n'
-            self.bot.send_photo(self.message.chat.id, photo, result)
+
+            self.bot.send_photo(self.message.chat.id, photo, caption=result, reply_markup=keyboard)
 
             result = ''
 
@@ -28,10 +47,6 @@ class FishHandler(Handler):
         return list(Fish.objects.all().values())
 
     def add_record(self, message):
-        print('CHEEEEEEEEKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK')
-        print('SUCCESSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS', message.caption)
-
-        print('HERRRRRRRRREEEEEEEEEEEEEEEEE', message)
         if not message.photo:
             self.bot.send_message(message.chat.id, 'Provide a photo')
             return
@@ -42,9 +57,6 @@ class FishHandler(Handler):
             pattern = r'([^;]+)'
             result = re.findall(pattern, input_string)
 
-            print('RESUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUULT', result)
-            print('PHOOOOOOOOOOOTOOOOOOOOOOOOOOOOOO', message.photo)
-
             self.bot.send_photo(message.chat.id, message.photo[0].file_id)
             fish = Fish.objects.create(name=result[0].strip(),
                                         photo=message.photo[0].file_id,
@@ -54,3 +66,12 @@ class FishHandler(Handler):
             fish.save()
         except:
             self.bot.send_message(message.chat.id, 'You entered data incorrectly')
+
+    def edit_record(self, record_id, field_name, new_value):
+        fish_instance = Fish.objects.get(pk=record_id)
+        setattr(fish_instance, field_name, new_value)
+        fish_instance.save()
+
+    def delete_record(self, record_id):
+        fish_instance = Fish.objects.get(pk=record_id)
+        fish_instance.delete()

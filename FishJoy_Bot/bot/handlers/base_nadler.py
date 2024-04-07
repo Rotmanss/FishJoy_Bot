@@ -9,8 +9,8 @@ class Handler:
     def add_record(self, message):
         pass
 
-    def edit_record(self, message):
+    def edit_record(self, message, record_id, field_name, new_value):
         pass
 
-    def delete_record(self, message):
+    def delete_record(self, message, record_id):
         pass
