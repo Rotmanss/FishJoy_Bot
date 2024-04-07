@@ -19,8 +19,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
+from bot.passwords import SECRET_KEY_KEY
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-5p-1a3v20l(whu#sgfn7mslwaj1#-#%nbuyi!g2_#l2c$__i@@'
+SECRET_KEY = SECRET_KEY_KEY
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -75,12 +76,13 @@ WSGI_APPLICATION = 'FishJoy_Bot.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
+from bot.passwords import DB_PASSWORD
 DATABASES = {
     'default': {
        'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'fishjoy_bot',
         'USER': 'postgres',
-        'PASSWORD': 'asdasd123123',
+        'PASSWORD': f'{DB_PASSWORD}',
         'HOST': '127.0.0.1',
         'PORT': '5432',
     }
@@ -132,8 +134,9 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
 
+from bot.passwords import TOKEN_BOT_KEY
 # Telegram
-TOKEN_BOT = '6316610340:AAFDHGWaxmpcPyM1XYAFOXxRhuxtdr85cjI'
+TOKEN_BOT = TOKEN_BOT_KEY
 LOG_LEVEL = DEBUG
 
 LOGGING = {

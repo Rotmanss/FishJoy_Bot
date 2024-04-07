@@ -16,5 +16,5 @@ class Fish(forms.Form):
 
 
 class Baits(forms.Form):
-    name = forms.CharField(max_length=50, verbose_name='Bait name', required=False)
+    name = forms.CharField(max_length=50, required=False)
     price = forms.FloatField(validators=[MaxValueValidator(100000), MinValueValidator(0)], required=False)
