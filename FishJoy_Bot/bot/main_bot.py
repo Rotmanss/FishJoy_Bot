@@ -10,6 +10,8 @@ from bot.handlers.spots_handler import SpotsHandler
 from bot.handlers.fish_handler import FishHandler
 from bot.handlers.baits_handler import BaitsHandler
 
+from bot.validators import is_telegram_user_registered
+
 
 bot = telebot.TeleBot(settings.TOKEN_BOT, parse_mode='HTML')
 telebot.logger.setLevel(settings.LOG_LEVEL)
@@ -21,14 +23,6 @@ logger = logging.getLogger(__name__)
 def register_user(message):
     user_telegram_id = message.from_user.id
     User.objects.get_or_create(username=str(user_telegram_id))
-
-
-def is_telegram_user_registered(telegram_id):
-    try:
-        User.objects.get(username=str(telegram_id))
-        return True
-    except User.DoesNotExist:
-        return False
 
 
 @bot.message_handler(commands=['start'])
@@ -44,7 +38,6 @@ def start_handler(message):
     add_bait_button = types.InlineKeyboardButton('Add baits', callback_data='add_bait')
 
     keyboard.add(spots_button, fish_button, baits_button)
-
     if is_telegram_user_registered(message.from_user.id):
         keyboard.add(add_spot_button, add_fish_button, add_bait_button)
     else:
@@ -58,7 +51,7 @@ def start_handler(message):
 @bot.callback_query_handler(func=lambda call: call.data == 'spots')
 def handle_get_spots(callback):
     spots_handler = SpotsHandler(bot, callback.message)
-    spots_handler.get_all_records()
+    spots_handler.get_all_records(callback.from_user.id)
 
 
 @bot.callback_query_handler(func=lambda call: call.data == 'add_spot')
@@ -67,6 +60,40 @@ def handle_add_spots(callback):
     sent = bot.send_message(callback.message.chat.id, 'Input spot details like this ..., separated with semicolon')
 
     bot.register_next_step_handler(sent, spots_handler.add_record)
+
+
+@bot.callback_query_handler(func=lambda call: call.data == 'edit_spot')
+def handle_edit_spots(callback):
+    keyboard = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True)
+    keyboard.add(telebot.types.KeyboardButton('title'),
+                 telebot.types.KeyboardButton('Field 2'),
+                 telebot.types.KeyboardButton('Field 3'))
+    bot.send_message(callback.message.chat.id, "Which field do you want to edit?", reply_markup=keyboard)
+    bot.register_next_step_handler(callback.message, process_selected_field)
+
+
+def process_selected_field(message):
+    field_name = message.text
+    bot.send_message(message.chat.id, f"Please enter the new value for {field_name}")
+    bot.register_next_step_handler(message, lambda m: update_field(m, field_name))
+
+
+def update_field(message, field_name):
+    new_value = message.text
+
+    spots_handler = SpotsHandler(bot, message)
+    spots_handler.update_record(field_name, new_value)
+
+    bot.send_message(message.chat.id, f"{field_name.capitalize()} has been updated to {new_value}.")
+
+
+@bot.callback_query_handler(func=lambda call: call.data == 'delete_spot')
+def handle_delete_spots(callback):
+    # spots_handler = SpotsHandler(bot, callback.message)
+    # sent = bot.send_message(callback.message.chat.id, 'Input spot details like this ..., separated with semicolon')
+    #
+    # bot.register_next_step_handler(sent, spots_handler.add_record)
+    print('NIIIIIIIIIIIIIIIIIIIIIIIICCCCCCCCCCCCE')
 
 
 # FISH

@@ -10,7 +10,7 @@ class FishHandler(Handler):
         self.bot = bot
         self.message = message
 
-    def get_all_records(self):
+    def get_all_records(self, current_user_id):
         result = ''
         photo = 'AgACAgIAAxkBAAPmZgp3cwABhLE4BMdIQaTVrttbKafQAALZ4zEbOEZQSGkjdNm_ZtTWAQADAgADcwADNAQ'
         for spot in self._get_from_db():

@@ -1,5 +1,5 @@
 class Handler:
-    def get_all_records(self):
+    def get_all_records(self, current_user_id):
         pass
 
     @staticmethod
@@ -7,4 +7,10 @@ class Handler:
         pass
 
     def add_record(self, message):
+        pass
+
+    def edit_record(self, message):
+        pass
+
+    def delete_record(self, message):
         pass
