@@ -4,11 +4,11 @@ import telebot
 from telebot.async_telebot import types
 
 from bot.father_bot import bot
+from bot.main_menu_keyboard import main_keyboard, main_menu_keyboard, init_keyboard
 
 from django.conf import settings
 from django.contrib.auth.models import User
 
-from bot.validators import is_telegram_user_registered
 
 from bot.callbacks.spots_callbacks import handle_get_spots, handle_add_spots, handle_edit_spots, handle_delete_spots
 from bot.callbacks.fish_callbacks import handle_get_fish, handle_add_fish, handle_edit_fish, handle_delete_fish
@@ -19,6 +19,8 @@ telebot.logger.setLevel(settings.LOG_LEVEL)
 
 logger = logging.getLogger(__name__)
 
+SEND_ONCE = False
+
 
 @bot.message_handler(commands=['register'])
 def register_user(message):
@@ -27,30 +29,20 @@ def register_user(message):
 
 
 @bot.message_handler(commands=['start'])
+@bot.message_handler(func=lambda message: message.text == 'Main menu')
 def start_handler(message):
-    keyboard = types.InlineKeyboardMarkup(row_width=3)
+    init_keyboard(message)
 
-    spots_button = types.InlineKeyboardButton('Spots', callback_data='spots')
-    fish_button = types.InlineKeyboardButton('Fish', callback_data='fish')
-    baits_button = types.InlineKeyboardButton('Baits', callback_data='baits')
-
-    add_spot_button = types.InlineKeyboardButton('Add spots', callback_data='add_spot')
-    add_fish_button = types.InlineKeyboardButton('Add fish', callback_data='add_fish')
-    add_bait_button = types.InlineKeyboardButton('Add baits', callback_data='add_bait')
-
-    keyboard.add(spots_button, fish_button, baits_button)
-    if is_telegram_user_registered(message.from_user.id):
-        keyboard.add(add_spot_button, add_fish_button, add_bait_button)
-    else:
-        bot.send_message(message.chat.id, ("If you want to add information, you need to register your account first.\n"
-                                           "To register your account type /register"))
-
-    bot.send_message(message.chat.id, f'Hello, {message.from_user.first_name}, here are your options:', reply_markup=keyboard)
+    bot.send_message(message.chat.id, f'Main Menu', reply_markup=main_keyboard)
+    global SEND_ONCE
+    if not SEND_ONCE:
+        bot.send_message(message.chat.id, f'Hello, {message.from_user.first_name}',  reply_markup=main_menu_keyboard)
+        SEND_ONCE = True
 
 
 @bot.message_handler(func=lambda message: True)
 def echo_message(message):
-    bot.reply_to(message, 'Press a button and select what you want to do')
+    bot.reply_to(message, 'Press a button in main menu, or press /start.')
 
 # @bot.message_handler(content_types=['text'])
 # def main_menu(message):

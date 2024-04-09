@@ -1,3 +1,4 @@
+from bot.forms import BaitsForm
 from bot.handlers.base_nadler import Handler
 from bot.models import Baits
 from telebot.async_telebot import types
@@ -58,20 +59,33 @@ class BaitsHandler(Handler):
             pattern = r'([^;]+)'
             result = re.findall(pattern, input_string)
 
-            self.bot.send_photo(message.chat.id, message.photo[0].file_id)
-            bait = Baits.objects.create(name=result[0].strip(),
-                                        photo=message.photo[0].file_id,
-                                        price=result[1].strip(),
-                                        user_id=User.objects.get(username=str(message.from_user.id)).id)
-            bait.save()
+            form = BaitsForm({'name': result[0],
+                             'price': result[1]})
+            if form.is_valid():
+                self.bot.send_photo(message.chat.id, message.photo[0].file_id)
+                bait = Baits.objects.create(name=result[0].strip(),
+                                            photo=message.photo[0].file_id,
+                                            price=result[1].strip(),
+                                            user_id=User.objects.get(username=str(message.from_user.id)).id)
+                bait.save()
+            else:
+                errors = form.errors.as_text()
+                self.bot.send_message(message.chat.id, f"Validation errors: {errors}")
         except:
             self.bot.send_message(message.chat.id, 'You entered data incorrectly')
 
-    def edit_record(self, record_id, field_name, new_value):
-        bait_instance = Baits.objects.get(pk=record_id)
-        setattr(bait_instance, field_name, new_value)
-        bait_instance.save()
+    def edit_record(self, message, record_id, field_name, new_value):
+        form = BaitsForm({f'{field_name}': new_value})
 
-    def delete_record(self, record_id):
+        if form.is_valid():
+            bait_instance = Baits.objects.get(pk=record_id)
+            setattr(bait_instance, field_name, new_value)
+            bait_instance.save()
+            self.bot.send_message(message.chat.id, f"{field_name.capitalize()} has been updated to {new_value}.")
+        else:
+            errors = form.errors.as_text()
+            self.bot.send_message(message.chat.id, f"Validation error: {errors}")
+
+    def delete_record(self, message, record_id):
         bait_instance = Baits.objects.get(pk=record_id)
         bait_instance.delete()

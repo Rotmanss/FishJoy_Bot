@@ -1,4 +1,5 @@
 from bot.handlers.base_nadler import Handler
+from bot.main_menu_keyboard import main_keyboard
 from bot.models import Spots
 
 from telebot.async_telebot import types
@@ -75,7 +76,7 @@ class SpotsHandler(Handler):
                 self.bot.send_message(message.chat.id, 'Spot was added successfully.')
             else:
                 errors = form.errors.as_text()
-                self.bot.send_message(message.chat.id, f"Validation errors: {errors.strip('*')}")
+                self.bot.send_message(message.chat.id, f"Validation errors: {errors}")
         except:
             self.bot.send_message(message.chat.id, 'You entered data incorrectly')
 

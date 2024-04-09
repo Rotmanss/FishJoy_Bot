@@ -50,3 +50,4 @@ def handle_delete_spots(callback):
 
     spots_handler = SpotsHandler(bot, callback.message)
     spots_handler.delete_record(callback.message, record_id=spot_id)
+    bot.send_message(callback.message.chat.id, f"Selected record has been deleted!")

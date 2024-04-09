@@ -41,9 +41,7 @@ def update_field_spots(message, field_name, bait_id):
     new_value = message.text
 
     baits_handler = BaitsHandler(bot, message)
-    baits_handler.edit_record(record_id=bait_id, field_name=field_name, new_value=new_value)
-
-    bot.send_message(message.chat.id, f"{field_name.capitalize()} has been updated to {new_value}.")
+    baits_handler.edit_record(message, record_id=bait_id, field_name=field_name, new_value=new_value)
 
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith('delete_bait'))
@@ -51,5 +49,5 @@ def handle_delete_fish(callback):
     bait_id = callback.data.split('_')[-1]
 
     baits_handler = BaitsHandler(bot, callback.message)
-    baits_handler.delete_record(record_id=bait_id)
+    baits_handler.delete_record(callback.message, record_id=bait_id)
     bot.send_message(callback.message.chat.id, f"Selected record has been deleted!")

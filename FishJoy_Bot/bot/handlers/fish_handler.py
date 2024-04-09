@@ -1,3 +1,4 @@
+from bot.forms import FishForm
 from bot.handlers.base_nadler import Handler
 from bot.models import Fish
 
@@ -57,21 +58,35 @@ class FishHandler(Handler):
             pattern = r'([^;]+)'
             result = re.findall(pattern, input_string)
 
-            self.bot.send_photo(message.chat.id, message.photo[0].file_id)
-            fish = Fish.objects.create(name=result[0].strip(),
-                                        photo=message.photo[0].file_id,
-                                        average_weight=result[1].strip(),
-                                        user_id=User.objects.get(username=str(message.from_user.id)).id,
-                                        fish_category_id=result[2].strip())
-            fish.save()
+            form = FishForm({'name': result[0],
+                              'average_weight': result[1],
+                              'fish_category': result[2]})
+            if form.is_valid():
+                self.bot.send_photo(message.chat.id, message.photo[0].file_id)
+                fish = Fish.objects.create(name=result[0].strip(),
+                                            photo=message.photo[0].file_id,
+                                            average_weight=result[1].strip(),
+                                            user_id=User.objects.get(username=str(message.from_user.id)).id,
+                                            fish_category_id=result[2].strip())
+                fish.save()
+            else:
+                errors = form.errors.as_text()
+                self.bot.send_message(message.chat.id, f"Validation errors: {errors}")
         except:
             self.bot.send_message(message.chat.id, 'You entered data incorrectly')
 
-    def edit_record(self, record_id, field_name, new_value):
-        fish_instance = Fish.objects.get(pk=record_id)
-        setattr(fish_instance, field_name, new_value)
-        fish_instance.save()
+    def edit_record(self, message, record_id, field_name, new_value):
+        form = FishForm({f'{field_name}': new_value})
 
-    def delete_record(self, record_id):
+        if form.is_valid():
+            fish_instance = Fish.objects.get(pk=record_id)
+            setattr(fish_instance, field_name, new_value)
+            fish_instance.save()
+            self.bot.send_message(message.chat.id, f"{field_name.capitalize()} has been updated to {new_value}.")
+        else:
+            errors = form.errors.as_text()
+            self.bot.send_message(message.chat.id, f"Validation error: {errors}")
+
+    def delete_record(self, message, record_id):
         fish_instance = Fish.objects.get(pk=record_id)
         fish_instance.delete()

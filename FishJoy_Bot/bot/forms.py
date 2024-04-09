@@ -9,12 +9,12 @@ class SpotsForm(forms.Form):
     spot_category = forms.IntegerField(validators=[MaxValueValidator(4), MinValueValidator(1)], required=False)
 
 
-class Fish(forms.Form):
+class FishForm(forms.Form):
     name = forms.CharField(max_length=50, required=False)
     average_weight = forms.FloatField(validators=[MaxValueValidator(200.0), MinValueValidator(0.1)], required=False)
     fish_category = forms.IntegerField(validators=[MaxValueValidator(2), MinValueValidator(1)], required=False)
 
 
-class Baits(forms.Form):
+class BaitsForm(forms.Form):
     name = forms.CharField(max_length=50, required=False)
     price = forms.FloatField(validators=[MaxValueValidator(100000), MinValueValidator(0)], required=False)
