@@ -29,6 +29,9 @@ class BaitsHandler(Handler):
                 if key == 'time_create' or key == 'time_update':
                     value = value.strftime('%B %d, %Y %I:%M %p')
 
+                elif key == 'price':
+                    value = f'{value}$'
+
                 keyboard = types.InlineKeyboardMarkup(row_width=2)
                 if key == 'user_id' and str(value) == str(User.objects.get(username=current_user_id).id):
                     edit = types.InlineKeyboardButton("Edit bait", callback_data=f"edit_bait_{id}")
@@ -38,7 +41,7 @@ class BaitsHandler(Handler):
                 elif key == 'user_id':
                     continue
 
-                result += f'<b>{key}</b> : {value}\n'
+                result += f'<b>{' '.join(word for word in key.capitalize().split('_'))}</b> : {value}\n'
 
             self.bot.send_photo(self.message.chat.id, photo, caption=result, reply_markup=keyboard)
 

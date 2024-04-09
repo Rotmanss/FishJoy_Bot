@@ -38,7 +38,10 @@ def process_selected_field_baits(message, bait_id):
 
 
 def update_field_spots(message, field_name, bait_id):
-    new_value = message.text
+    if field_name == 'photo':
+        new_value = message.photo[0].file_id
+    else:
+        new_value = message.text
 
     baits_handler = BaitsHandler(bot, message)
     baits_handler.edit_record(message, record_id=bait_id, field_name=field_name, new_value=new_value)

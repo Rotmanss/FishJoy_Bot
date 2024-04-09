@@ -1,6 +1,6 @@
 from bot.forms import FishForm
 from bot.handlers.base_nadler import Handler
-from bot.models import Fish
+from bot.models import Fish, FishCategory
 
 from django.contrib.auth.models import User
 import re
@@ -21,12 +21,19 @@ class FishHandler(Handler):
                     photo = f'{value}'
                     continue
 
-                if key == 'id':
+                elif key == 'id':
                     id = value
                     continue
 
-                if key == 'time_create' or key == 'time_update':
+                elif key == 'time_create' or key == 'time_update':
                     value = value.strftime('%B %d, %Y %I:%M %p')
+
+                elif key == 'fish_category_id':
+                    fish_category_instance = FishCategory.objects.get(pk=value)
+                    value = f'{fish_category_instance.name} (id: {fish_category_instance.id})'
+
+                elif key == 'average_weight':
+                    value = f'{value} kg'
 
                 keyboard = types.InlineKeyboardMarkup(row_width=2)
                 if key == 'user_id' and str(value) == str(User.objects.get(username=current_user_id).id):
@@ -37,7 +44,7 @@ class FishHandler(Handler):
                 elif key == 'user_id':
                     continue
 
-                result += f'<b>{key}</b> : {value}\n'
+                result += f'<b>{' '.join(word for word in key.capitalize().split('_'))}</b> : {value}\n'
 
             self.bot.send_photo(self.message.chat.id, photo, caption=result, reply_markup=keyboard)
 

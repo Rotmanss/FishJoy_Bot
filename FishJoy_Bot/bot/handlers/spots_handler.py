@@ -1,6 +1,6 @@
 from bot.handlers.base_nadler import Handler
 from bot.main_menu_keyboard import main_keyboard
-from bot.models import Spots
+from bot.models import Spots, SpotCategory
 
 from telebot.async_telebot import types
 
@@ -24,12 +24,19 @@ class SpotsHandler(Handler):
                     photo = f'{value}'
                     continue
 
-                if key == 'id':
+                elif key == 'id':
                     id = value
                     continue
 
-                if key == 'time_create' or key == 'time_update':
+                elif key == 'time_create' or key == 'time_update':
                     value = value.strftime('%B %d, %Y %I:%M %p')
+
+                elif key == 'spot_category_id':
+                    spot_category_instance = SpotCategory.objects.get(pk=value)
+                    value = f'{spot_category_instance.name} (id: {spot_category_instance.id})'
+
+                elif key == 'max_depth':
+                    value = f'{value} meters'
 
                 keyboard = types.InlineKeyboardMarkup(row_width=2)
                 if key == 'user_id' and str(value) == str(User.objects.get(username=current_user_id).id):
@@ -40,7 +47,7 @@ class SpotsHandler(Handler):
                 elif key == 'user_id':
                     continue
 
-                result += f'<b>{key}</b> : {value}\n'
+                result += f'<b>{' '.join(word for word in key.capitalize().split('_'))}</b> : {value}\n'
 
             self.bot.send_photo(self.message.chat.id, photo, caption=result, reply_markup=keyboard)
 
@@ -88,7 +95,7 @@ class SpotsHandler(Handler):
                 spot_instance = Spots.objects.get(pk=record_id)
                 setattr(spot_instance, field_name, new_value)
                 spot_instance.save()
-                self.bot.send_message(message.chat.id, f"{field_name.capitalize()} has been updated to {new_value}.")
+                self.bot.send_message(message.chat.id, f"{field_name.capitalize()} has been updated.")
             else:
                 errors = form.errors.as_text()
                 self.bot.send_message(message.chat.id, f"Validation error: {errors}")

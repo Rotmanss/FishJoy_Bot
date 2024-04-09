@@ -38,7 +38,10 @@ def process_selected_field_fish(message, fish_id):
 
 
 def update_field_fish(message, field_name, fish_id):
-    new_value = message.text
+    if field_name == 'photo':
+        new_value = message.photo[0].file_id
+    else:
+        new_value = message.text
 
     fish_handler = FishHandler(bot, message)
     fish_handler.edit_record(message, record_id=fish_id, field_name=field_name, new_value=new_value)
