@@ -3,6 +3,7 @@ from django.db import models
 from django.contrib.auth import get_user_model
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+from django.db.models import Avg
 from django.urls import reverse
 
 
@@ -14,6 +15,7 @@ class Spots(models.Model):
     spot_category = models.ForeignKey('SpotCategory', on_delete=models.PROTECT)
     time_create = models.DateTimeField(auto_now_add=True)
     time_update = models.DateTimeField(auto_now=True)
+    average_rating = models.FloatField(validators=[MaxValueValidator(5), MinValueValidator(1)])
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
 
     def __str__(self):
@@ -94,14 +96,23 @@ class FishCategory(models.Model):
 
 
 class Feedback(models.Model):
-    name = models.CharField(max_length=50, db_index=True)
-    email = models.EmailField(max_length=50, db_index=True)
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     subject = models.TextField(max_length=1000)
-
-    def __str__(self):
-        return self.name
 
     class Meta:
         verbose_name = 'Feedback'
         verbose_name_plural = 'Feedback'
-        ordering = ['name']
+
+
+class Evaluation(models.Model):
+    record = models.ForeignKey(Spots, on_delete=models.CASCADE)
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+    rating = models.IntegerField(validators=[MaxValueValidator(5), MinValueValidator(1)])
+
+    @staticmethod
+    def update_average_rating_for_record_id(record_id):
+        evaluations = Evaluation.objects.filter(record__id=record_id)
+        average_rating = evaluations.aggregate(Avg('rating'))['rating__avg'] or 0.0
+        record = Spots.objects.get(pk=record_id)
+        record.average_rating = average_rating
+        record.save()

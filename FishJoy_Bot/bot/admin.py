@@ -29,4 +29,9 @@ class FishCategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Feedback)
 class FeedbackAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'email', 'subject')
+    list_display = ('id', 'user_id', 'subject')
+
+
+@admin.register(Evaluation)
+class EvaluationAdmin(admin.ModelAdmin):
+    list_display = ('id', 'user_id', 'rating')

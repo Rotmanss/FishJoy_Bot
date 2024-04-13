@@ -22,15 +22,17 @@ def init_keyboard(message):
     add_fish_button = types.InlineKeyboardButton('Add fish', callback_data='add_fish')
     add_bait_button = types.InlineKeyboardButton('Add baits', callback_data='add_bait')
 
+    feedback_button = types.InlineKeyboardButton('Feedback', callback_data='feedback')
+
     if not main_keyboard.keyboard:
         main_keyboard.add(spots_button, fish_button, baits_button)
 
     if is_telegram_user_registered(message.from_user.id):
         global ADD_ONCE
         if not ADD_ONCE:
-            main_keyboard.add(add_spot_button, add_fish_button, add_bait_button)
+            main_keyboard.add(add_spot_button, add_fish_button, add_bait_button, feedback_button)
             ADD_ONCE = True
     else:
         bot.send_message(message.chat.id, (
-            "If you want to add information, you need to register your account first. For now you can only read.\n\n"
-            "To register your account type /register. "))
+            "If you want to add information and leave feedback, you need to register your account first. "
+            "For now you can only read.\n\nTo register your account type /register. "))

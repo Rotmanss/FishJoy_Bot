@@ -6,6 +6,8 @@ from django.contrib.auth.models import User
 import re
 from telebot.async_telebot import types
 
+from bot.main_menu_keyboard import main_menu_keyboard
+
 
 class FishHandler(Handler):
     def __init__(self, bot, message):
@@ -83,16 +85,19 @@ class FishHandler(Handler):
             self.bot.send_message(message.chat.id, 'You entered data incorrectly')
 
     def edit_record(self, message, record_id, field_name, new_value):
-        form = FishForm({f'{field_name}': new_value})
+        try:
+            form = FishForm({f'{field_name}': new_value})
 
-        if form.is_valid():
-            fish_instance = Fish.objects.get(pk=record_id)
-            setattr(fish_instance, field_name, new_value)
-            fish_instance.save()
-            self.bot.send_message(message.chat.id, f"{field_name.capitalize()} has been updated to {new_value}.")
-        else:
-            errors = form.errors.as_text()
-            self.bot.send_message(message.chat.id, f"Validation error: {errors}")
+            if form.is_valid():
+                fish_instance = Fish.objects.get(pk=record_id)
+                setattr(fish_instance, field_name, new_value)
+                fish_instance.save()
+                self.bot.send_message(message.chat.id, f"{field_name.capitalize()} has been updated.", reply_markup=main_menu_keyboard)
+            else:
+                errors = form.errors.as_text()
+                self.bot.send_message(message.chat.id, f"Validation error: {errors}", reply_markup=main_menu_keyboard)
+        except:
+            self.bot.send_message(message.chat.id, 'You entered data incorrectly', reply_markup=main_menu_keyboard)
 
     def delete_record(self, message, record_id):
         fish_instance = Fish.objects.get(pk=record_id)

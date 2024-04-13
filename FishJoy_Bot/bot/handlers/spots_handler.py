@@ -1,11 +1,12 @@
 from bot.handlers.base_nadler import Handler
-from bot.main_menu_keyboard import main_keyboard
 from bot.models import Spots, SpotCategory
 
 from telebot.async_telebot import types
 
 from django.contrib.auth.models import User
 from bot.forms import SpotsForm
+
+from bot.main_menu_keyboard import main_menu_keyboard
 
 import re
 
@@ -38,11 +39,15 @@ class SpotsHandler(Handler):
                 elif key == 'max_depth':
                     value = f'{value} meters'
 
+                elif key == 'average_rating':
+                    value = f'{value:.1f}'
+
                 keyboard = types.InlineKeyboardMarkup(row_width=2)
                 if key == 'user_id' and str(value) == str(User.objects.get(username=current_user_id).id):
                     edit = types.InlineKeyboardButton("Edit spot", callback_data=f"edit_spot_{id}")
                     delete = types.InlineKeyboardButton("Delete spot", callback_data=f"delete_spot_{id}")
-                    keyboard.add(edit, delete)
+                    evaluate = types.InlineKeyboardButton("Rating", callback_data=f"evaluate_{id}")
+                    keyboard.add(edit, delete, evaluate)
                     continue
                 elif key == 'user_id':
                     continue
@@ -78,7 +83,8 @@ class SpotsHandler(Handler):
                                             photo=message.photo[0].file_id,
                                             max_depth=result[2].strip(),
                                             spot_category_id=result[3].strip(),
-                                            user_id=User.objects.get(username=str(message.from_user.id)).id)
+                                            user_id=User.objects.get(username=str(message.from_user.id)).id,
+                                            average_rating=3)
                 spot.save()
                 self.bot.send_message(message.chat.id, 'Spot was added successfully.')
             else:
@@ -95,12 +101,12 @@ class SpotsHandler(Handler):
                 spot_instance = Spots.objects.get(pk=record_id)
                 setattr(spot_instance, field_name, new_value)
                 spot_instance.save()
-                self.bot.send_message(message.chat.id, f"{field_name.capitalize()} has been updated.")
+                self.bot.send_message(message.chat.id, f"{field_name.capitalize()} has been updated.", reply_markup=main_menu_keyboard)
             else:
                 errors = form.errors.as_text()
-                self.bot.send_message(message.chat.id, f"Validation error: {errors}")
+                self.bot.send_message(message.chat.id, f"Validation error: {errors}", reply_markup=main_menu_keyboard)
         except:
-            self.bot.send_message(message.chat.id, 'You entered data incorrectly')
+            self.bot.send_message(message.chat.id, 'You entered data incorrectly', reply_markup=main_menu_keyboard)
 
     def delete_record(self, message, record_id):
         try:

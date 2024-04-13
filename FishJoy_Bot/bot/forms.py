@@ -18,3 +18,7 @@ class FishForm(forms.Form):
 class BaitsForm(forms.Form):
     name = forms.CharField(max_length=50, required=False)
     price = forms.FloatField(validators=[MaxValueValidator(100000), MinValueValidator(0)], required=False)
+
+
+class EvaluationForm(forms.Form):
+    rating = forms.IntegerField(validators=[MaxValueValidator(5), MinValueValidator(1)])

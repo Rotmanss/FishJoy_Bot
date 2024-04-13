@@ -1,8 +1,10 @@
 import telebot
 
+from bot import main_menu_keyboard
 from bot.father_bot import bot
 
 from bot.handlers.fish_handler import FishHandler
+from bot.models import Fish
 
 
 @bot.callback_query_handler(func=lambda call: call.data == 'fish')
@@ -32,12 +34,16 @@ def handle_edit_fish(callback):
 
 
 def process_selected_field_fish(message, fish_id):
-    field_name = message.text
-    bot.send_message(message.chat.id, f"Please enter the new value for {field_name}", reply_markup=telebot.types.ReplyKeyboardRemove())
-    bot.register_next_step_handler(message, lambda m: update_field_fish(m, field_name, fish_id))
+    if message.text in [field.name for field in Fish._meta.get_fields()]:
+        field_name = message.text
+        bot.send_message(message.chat.id, f"Please enter the new value for {field_name}", reply_markup=telebot.types.ReplyKeyboardRemove())
+        bot.register_next_step_handler(message, lambda m: update_field_fish(m, field_name, fish_id))
+    else:
+        bot.send_message(message.chat.id, "The field name you provided does not exist", reply_markup=main_menu_keyboard)
 
 
 def update_field_fish(message, field_name, fish_id):
+    field_name = field_name.lower()
     if field_name == 'photo':
         new_value = message.photo[0].file_id
     else:

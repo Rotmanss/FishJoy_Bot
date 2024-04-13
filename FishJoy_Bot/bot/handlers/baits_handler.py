@@ -3,6 +3,7 @@ from bot.handlers.base_nadler import Handler
 from bot.models import Baits
 from telebot.async_telebot import types
 
+from bot.main_menu_keyboard import main_menu_keyboard
 
 from django.contrib.auth.models import User
 import re
@@ -78,16 +79,19 @@ class BaitsHandler(Handler):
             self.bot.send_message(message.chat.id, 'You entered data incorrectly')
 
     def edit_record(self, message, record_id, field_name, new_value):
-        form = BaitsForm({f'{field_name}': new_value})
+        try:
+            form = BaitsForm({f'{field_name}': new_value})
 
-        if form.is_valid():
-            bait_instance = Baits.objects.get(pk=record_id)
-            setattr(bait_instance, field_name, new_value)
-            bait_instance.save()
-            self.bot.send_message(message.chat.id, f"{field_name.capitalize()} has been updated to {new_value}.")
-        else:
-            errors = form.errors.as_text()
-            self.bot.send_message(message.chat.id, f"Validation error: {errors}")
+            if form.is_valid():
+                bait_instance = Baits.objects.get(pk=record_id)
+                setattr(bait_instance, field_name, new_value)
+                bait_instance.save()
+                self.bot.send_message(message.chat.id, f"{field_name.capitalize()} has been updated.", reply_markup=main_menu_keyboard)
+            else:
+                errors = form.errors.as_text()
+                self.bot.send_message(message.chat.id, f"Validation error: {errors}", reply_markup=main_menu_keyboard)
+        except:
+            self.bot.send_message(message.chat.id, 'You entered data incorrectly', reply_markup=main_menu_keyboard)
 
     def delete_record(self, message, record_id):
         bait_instance = Baits.objects.get(pk=record_id)
