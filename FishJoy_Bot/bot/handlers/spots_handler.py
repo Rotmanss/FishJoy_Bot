@@ -60,7 +60,7 @@ class SpotsHandler(Handler):
 
     @staticmethod
     def _get_from_db():
-        return list(Spots.objects.all().values())
+        return list(Spots.objects.all().order_by('average_rating').values())
 
     def add_record(self, message):
         if not message.photo:

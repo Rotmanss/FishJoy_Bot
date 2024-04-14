@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 import re
 from telebot.async_telebot import types
 
-from bot.main_menu_keyboard import main_menu_keyboard
+from bot import main_menu_keyboard
 
 
 class FishHandler(Handler):
@@ -100,5 +100,10 @@ class FishHandler(Handler):
             self.bot.send_message(message.chat.id, 'You entered data incorrectly', reply_markup=main_menu_keyboard)
 
     def delete_record(self, message, record_id):
-        fish_instance = Fish.objects.get(pk=record_id)
-        fish_instance.delete()
+        try:
+            fish_instance = Fish.objects.get(pk=record_id)
+            fish_instance.delete()
+            self.bot.send_message(message.chat.id, f"Selected record has been deleted!")
+
+        except:
+            self.bot.send_message(message.chat.id, 'You entered data incorrectly')

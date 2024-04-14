@@ -1,6 +1,6 @@
 import telebot
 
-from bot import main_menu_keyboard
+from bot.main_menu_keyboard import main_menu_keyboard
 from bot.father_bot import bot
 
 from bot.handlers.fish_handler import FishHandler
@@ -24,9 +24,10 @@ def handle_add_fish(callback):
 @bot.callback_query_handler(func=lambda call: call.data.startswith('edit_fish'))
 def handle_edit_fish(callback):
     keyboard = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True)
-    keyboard.add(telebot.types.KeyboardButton('name'),
-                 telebot.types.KeyboardButton('Field 2'),
-                 telebot.types.KeyboardButton('Field 3'))
+    keyboard.add(telebot.types.KeyboardButton('Name'),
+                 telebot.types.KeyboardButton('Average weight'),
+                 telebot.types.KeyboardButton('Fish category id'),
+                 telebot.types.KeyboardButton('Photo'))
     bot.send_message(callback.message.chat.id, "Which field do you want to edit?", reply_markup=keyboard)
 
     fish_id = callback.data.split('_')[-1]
@@ -34,8 +35,8 @@ def handle_edit_fish(callback):
 
 
 def process_selected_field_fish(message, fish_id):
+    field_name = message.text.lower()
     if message.text in [field.name for field in Fish._meta.get_fields()]:
-        field_name = message.text
         bot.send_message(message.chat.id, f"Please enter the new value for {field_name}", reply_markup=telebot.types.ReplyKeyboardRemove())
         bot.register_next_step_handler(message, lambda m: update_field_fish(m, field_name, fish_id))
     else:
@@ -55,8 +56,15 @@ def update_field_fish(message, field_name, fish_id):
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith('delete_fish'))
 def handle_delete_fish(callback):
+    bot.send_message(callback.message.chat.id, "To delete this record type 1, to cancel type 0")
     fish_id = callback.data.split('_')[-1]
 
-    fish_handler = FishHandler(bot, callback.message)
-    fish_handler.delete_record(callback.message, record_id=fish_id)
-    bot.send_message(callback.message.chat.id, f"Selected record has been deleted!")
+    bot.register_next_step_handler(callback.message, lambda m: process_delete_fish(m, fish_id))
+
+
+def process_delete_fish(message, fish_id):
+    if message.text == '1':
+        fish_handler = FishHandler(bot, message)
+        fish_handler.delete_record(message, record_id=fish_id)
+    else:
+        bot.send_message(message.chat.id, f"You canceled deletion")

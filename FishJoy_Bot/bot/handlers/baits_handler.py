@@ -94,5 +94,10 @@ class BaitsHandler(Handler):
             self.bot.send_message(message.chat.id, 'You entered data incorrectly', reply_markup=main_menu_keyboard)
 
     def delete_record(self, message, record_id):
-        bait_instance = Baits.objects.get(pk=record_id)
-        bait_instance.delete()
+        try:
+            bait_instance = Baits.objects.get(pk=record_id)
+            bait_instance.delete()
+            self.bot.send_message(message.chat.id, f"Selected record has been deleted!")
+
+        except:
+            self.bot.send_message(message.chat.id, 'You entered data incorrectly')
