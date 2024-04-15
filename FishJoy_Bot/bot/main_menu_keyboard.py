@@ -23,9 +23,10 @@ def init_keyboard(message):
     add_bait_button = types.InlineKeyboardButton('Add baits', callback_data='add_bait')
 
     feedback_button = types.InlineKeyboardButton('Feedback', callback_data='feedback')
+    weather_button = types.InlineKeyboardButton('Weather', callback_data='weather')
 
     if not main_keyboard.keyboard:
-        main_keyboard.add(spots_button, fish_button, baits_button)
+        main_keyboard.add(spots_button, fish_button, baits_button, weather_button)
 
     if is_telegram_user_registered(message.from_user.id):
         global ADD_ONCE

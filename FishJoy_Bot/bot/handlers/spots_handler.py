@@ -71,7 +71,7 @@ class SpotsHandler(Handler):
             input_string = message.caption
 
             pattern = r'([^;]+)'
-            result = re.findall(pattern, input_string)
+            result = list(map(str.strip, re.findall(pattern, input_string)))
 
             form = SpotsForm({'title': result[0],
                               'location': result[1],

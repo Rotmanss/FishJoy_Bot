@@ -17,7 +17,14 @@ def handle_get_spots(callback):
 @bot.callback_query_handler(func=lambda call: call.data == 'add_spot')
 def handle_add_spots(callback):
     spots_handler = SpotsHandler(bot, callback.message)
-    sent = bot.send_message(callback.message.chat.id, 'Input spot details like this <b>ggfg</b>, separated with semicolon')
+    sent = bot.send_message(callback.message.chat.id,
+                            ('Input spot details in one line, separated with semicolon:\n'
+                             '<i>Title</i>;\n'
+                             '<i>Location</i>;\n'
+                             '<i>Max depth in meters</i>;\n'
+                             '<i>Spot category ids:\n'
+                             '1 - Lake, 2 - River, 3 - Sea, 4 - Ocean</i>\n'
+                             'Attach photo and make sure details are separated with semicolon.'))
 
     bot.register_next_step_handler(sent, spots_handler.add_record)
 
@@ -41,7 +48,8 @@ def handle_edit_spots(callback):
 def process_selected_field_spots(message, spot_id):
     field_name = message.text.lower()
     if field_name in [field.name for field in Spots._meta.get_fields()]:
-        bot.send_message(message.chat.id, f"Please enter the new value for {field_name}", reply_markup=telebot.types.ReplyKeyboardRemove())
+        bot.send_message(message.chat.id, f"Please enter the new value for {field_name}",
+                         reply_markup=telebot.types.ReplyKeyboardRemove())
         bot.register_next_step_handler(message, lambda m: update_field_spots(m, field_name, spot_id))
     else:
         bot.send_message(message.chat.id, "The field name you provided does not exist", reply_markup=main_menu_keyboard)

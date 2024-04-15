@@ -16,7 +16,11 @@ def handle_get_baits(callback):
 @bot.callback_query_handler(func=lambda call: call.data == 'add_bait')
 def handle_add_baits(callback):
     baits_handler = BaitsHandler(bot, callback.message)
-    sent = bot.send_message(callback.message.chat.id, 'Input spot details like this ..., separated with semicolon')
+    sent = bot.send_message(callback.message.chat.id,
+                            ('Input bait details in one line, separated with semicolon:\n'
+                             '<i>Name</i>;\n'
+                             '<i>Price in dollars</i>\n'
+                             'Attach photo and make sure details are separated with semicolon.'))
 
     bot.register_next_step_handler(sent, baits_handler.add_record)
 

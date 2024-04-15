@@ -16,7 +16,13 @@ def handle_get_fish(callback):
 @bot.callback_query_handler(func=lambda call: call.data == 'add_fish')
 def handle_add_fish(callback):
     fish_handler = FishHandler(bot, callback.message)
-    sent = bot.send_message(callback.message.chat.id, 'Input spot details like this ..., separated with semicolon')
+    sent = bot.send_message(callback.message.chat.id,
+                            ('Input fish details in one line, separated with semicolon:\n'
+                             '<i>Name</i>;\n'
+                             '<i>Average weight in kilograms</i>;\n'
+                             '<i>Fish category ids:\n'
+                             '1 - Peaceful, 2 - Predatory</i>\n'
+                             'Attach photo and make sure details are separated with semicolon.'))
 
     bot.register_next_step_handler(sent, fish_handler.add_record)
 

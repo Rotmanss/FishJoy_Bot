@@ -61,7 +61,7 @@ class BaitsHandler(Handler):
             input_string = message.caption
 
             pattern = r'([^;]+)'
-            result = re.findall(pattern, input_string)
+            result = list(map(str.strip, re.findall(pattern, input_string)))
 
             form = BaitsForm({'name': result[0],
                              'price': result[1]})

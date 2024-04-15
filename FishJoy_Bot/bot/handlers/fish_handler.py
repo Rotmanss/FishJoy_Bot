@@ -65,7 +65,7 @@ class FishHandler(Handler):
             input_string = message.caption
 
             pattern = r'([^;]+)'
-            result = re.findall(pattern, input_string)
+            result = list(map(str.strip, re.findall(pattern, input_string)))
 
             form = FishForm({'name': result[0],
                               'average_weight': result[1],
