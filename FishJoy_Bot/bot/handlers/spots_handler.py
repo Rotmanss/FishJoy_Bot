@@ -42,6 +42,9 @@ class SpotsHandler(Handler):
                 elif key == 'average_rating':
                     value = f'{value:.1f}'
 
+                elif key == 'location':
+                    location = value
+
                 keyboard = types.InlineKeyboardMarkup(row_width=2)
                 if key == 'user_id' and str(value) == str(User.objects.get(username=current_user_id).id):
                     edit = types.InlineKeyboardButton("Edit spot", callback_data=f"edit_spot_{id}")
@@ -54,6 +57,8 @@ class SpotsHandler(Handler):
 
                 result += f'<b>{' '.join(word for word in key.capitalize().split('_'))}</b> : {value}\n'
 
+            weather = types.InlineKeyboardButton("Weather", callback_data=f"weather_{id}")
+            keyboard.add(weather)
             self.bot.send_photo(self.message.chat.id, photo, caption=result, reply_markup=keyboard)
 
             result = ''

@@ -17,7 +17,7 @@ from bot.callbacks.feedback_callback import handle_feedback
 from bot.callbacks.spots_evaluation import evaluate
 
 
-from weather.weather_main import weather
+from weather.weather_callback import handle_weather
 
 
 telebot.logger.setLevel(settings.LOG_LEVEL)
