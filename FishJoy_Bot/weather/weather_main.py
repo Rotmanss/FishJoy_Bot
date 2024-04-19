@@ -1,14 +1,11 @@
 import requests
 import datetime
 
-from bot.father_bot import bot
-
 from bot.passwords import OPEN_CAGE_DATA, OPEN_WEATHER_MAP
 
 
-def weather(location):
+def get_weather(location):
     # API to find location to get weather data
-
     api_key = OPEN_CAGE_DATA
     url = f'https://api.opencagedata.com/geocode/v1/json?q={location}&key={api_key}'
 

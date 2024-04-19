@@ -58,7 +58,8 @@ class SpotsHandler(Handler):
                 result += f'<b>{' '.join(word for word in key.capitalize().split('_'))}</b> : {value}\n'
 
             weather = types.InlineKeyboardButton("Weather", callback_data=f"weather_{id}")
-            keyboard.add(weather)
+            map = types.InlineKeyboardButton("Map", callback_data=f"map_{id}")
+            keyboard.add(weather, map)
             self.bot.send_photo(self.message.chat.id, photo, caption=result, reply_markup=keyboard)
 
             result = ''
