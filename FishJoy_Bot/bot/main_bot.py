@@ -1,7 +1,6 @@
 import logging
 
 import telebot
-from telebot.async_telebot import types
 
 from bot.father_bot import bot
 from bot.main_menu_keyboard import main_keyboard, main_menu_keyboard, init_keyboard

@@ -8,4 +8,9 @@ def handle_map(callback):
     spot_id = callback.data.split('_')[-1]
     spot_instance = Spots.objects.get(pk=spot_id)
 
-    bot.send_location(callback.message.chat.id, *get_map(spot_instance.location))
+    response = get_map(spot_instance.location)
+
+    if response is not False:
+        bot.send_location(callback.message.chat.id, *response)
+    else:
+        bot.send_message(callback.message.chat.id, "Unfortunately I can't find the location")
