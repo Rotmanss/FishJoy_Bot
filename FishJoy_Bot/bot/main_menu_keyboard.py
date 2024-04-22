@@ -23,6 +23,8 @@ def init_keyboard(message):
     add_bait_button = types.InlineKeyboardButton('Add baits', callback_data='add_bait')
 
     feedback_button = types.InlineKeyboardButton('Feedback', callback_data='feedback')
+    search_nearest_spots_button = types.InlineKeyboardButton('Search nearest spots to me',
+                                                             callback_data='search_nearest_spots', request_location=True)
 
     if not main_keyboard.keyboard:
         main_keyboard.add(spots_button, fish_button, baits_button)
@@ -31,6 +33,7 @@ def init_keyboard(message):
         global ADD_ONCE
         if not ADD_ONCE:
             main_keyboard.add(add_spot_button, add_fish_button, add_bait_button, feedback_button)
+            main_keyboard.add(search_nearest_spots_button)
             ADD_ONCE = True
     else:
         bot.send_message(message.chat.id, (

@@ -19,6 +19,8 @@ from bot.callbacks.spots_evaluation import evaluate
 from weather.weather_callback import handle_weather
 from map.map_callback import handle_map
 
+from best_visiting_route.callbacks import search_nearest_spots_callback
+
 
 telebot.logger.setLevel(settings.LOG_LEVEL)
 

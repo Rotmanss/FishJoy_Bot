@@ -6,7 +6,9 @@ from bot.passwords import OPEN_CAGE_DATA
 def get_map(location):
     try:
         api_key = OPEN_CAGE_DATA
-        url = f'https://api.opencagedata.com/geocode/v1/json?q={location}&key={api_key}'
+        # TODO Error handling
+        lat, lon = location.split(',')
+        url = f'https://api.opencagedata.com/geocode/v1/json?q={lat}+{lon}&key={api_key}'
 
         response = requests.get(url).json()
 

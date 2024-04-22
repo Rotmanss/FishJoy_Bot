@@ -1,12 +1,8 @@
 from math import sin, asin, sqrt, cos, radians
 
 
-def haversine():
-    lat1 = 46.1753793
-    lon1 = 21.3196342
-    lat2 = 50.4500336
-    lon2 = 30.5241361
-    lon1, lat1, lon2, lat2 = map(radians, [lat1, lon1, lat2, lon2])
+def haversine(p1, p2):
+    lon1, lat1, lon2, lat2 = map(radians, [*p1, *p2])
 
     delta_lat = lat2 - lat1
     delta_lon = lon2 - lon1
@@ -21,6 +17,3 @@ def haversine():
     dist = earth_radius * c
 
     return dist
-
-
-print(haversine())

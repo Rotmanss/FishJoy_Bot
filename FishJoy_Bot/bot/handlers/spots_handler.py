@@ -42,9 +42,6 @@ class SpotsHandler(Handler):
                 elif key == 'average_rating':
                     value = f'{value:.1f}'
 
-                elif key == 'location':
-                    location = value
-
                 keyboard = types.InlineKeyboardMarkup(row_width=2)
                 if key == 'user_id' and str(value) == str(User.objects.get(username=current_user_id).id):
                     edit = types.InlineKeyboardButton("Edit spot", callback_data=f"edit_spot_{id}")
