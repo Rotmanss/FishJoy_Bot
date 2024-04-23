@@ -33,11 +33,43 @@ def process_location(message, k):
 
     clf = KNearestNeighbours(int(k))
     clf.fit(normalized_locations)
-    result = clf.predict((latitude, longitude))
+    knm_result = clf.predict((latitude, longitude))
 
-    bot.reply_to(message, f"{result}")
+    filtered_result = []
+    for distance, coords in knm_result['all_distances_and_coords']:
+        if distance in knm_result['top_distances']:
+            x, y = coords
+            filtered_result.append(f'{x}, {y}')
 
-    show_plot(result, (latitude, longitude), normalized_locations)
+    filtered_locations = list(Spots.objects.filter(location__in=filtered_result).values())
+
+    bot.reply_to(message, f"Top {k} locations to visit : {filtered_locations}")
+
+    result = ''
+    for i, loc in enumerate(filtered_locations):
+        for key, value in loc.items():
+            if key == 'photo':
+                photo = f'{value}'
+                continue
+            elif key == 'location':
+                coords = value
+                value = "{:.1f}°, {:.1f}°".format(*eval(value))
+            elif key == 'title':
+                value = f'{value}'
+            else:
+                continue
+
+            result += f'<b>{' '.join(word for word in key.capitalize().split('_'))}</b> : {value}\n'
+
+        for distance, x_y in knm_result['all_distances_and_coords']:
+            if ', '.join(map(str, x_y)) == coords:
+                related_to_spot_distance = distance
+
+        result += f'Distance from your place to this spot: {related_to_spot_distance:.1f} km'
+        bot.send_photo(message.chat.id, photo, caption=result)
+        result = ''
+
+    # show_plot(result, (latitude, longitude), normalized_locations)
 
 
 def show_plot(result, new_point, points):
