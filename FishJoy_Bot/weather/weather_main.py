@@ -7,7 +7,8 @@ from bot.passwords import OPEN_CAGE_DATA, OPEN_WEATHER_MAP
 def get_weather(location):
     # API to find location to get weather data
     api_key = OPEN_CAGE_DATA
-    url = f'https://api.opencagedata.com/geocode/v1/json?q={location}&key={api_key}'
+    lat, lon = location.split(',')
+    url = f'https://api.opencagedata.com/geocode/v1/json?q={lat}+{lon}&key={api_key}'
 
     response = requests.get(url).json()
     if response['total_results'] == 0:
@@ -21,7 +22,7 @@ def get_weather(location):
     key = OPEN_WEATHER_MAP
     url = f'https://api.openweathermap.org/data/2.5/weather?lat={latitude}&lon={longitude}&appid={key}&units=metric'
 
-    params = {'q': location, 'appid': key, 'units': 'metric'}
+    params = {'appid': key, 'units': 'metric'}
 
     r = requests.get(url=url, params=params)
     if not r.status_code == 200:

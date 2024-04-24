@@ -20,12 +20,17 @@ def process_k(message):
     bot.register_next_step_handler(message, lambda m: process_location(m, k))
 
 
-# @bot.message_handler(content_types=['location'])
+@bot.message_handler(content_types=['location'])
 def process_location(message, k):
-    latitude = 54.352908  # message.location.latitude
-    longitude = 30.550569  # message.location.longitude
+    try:
+        latitude = message.location.latitude
+        longitude = message.location.longitude
 
-    bot.reply_to(message, f"Received location: Latitude {latitude}, Longitude {longitude}")
+        bot.reply_to(message, f"Received location: Latitude {latitude}, Longitude {longitude}")
+    except AttributeError:
+        bot.reply_to(message,
+                     "You didn't send location. Please press button \"Search nearest spots to me\" and try again.")
+        return
 
     locations = get_all_locations_coordinates()
     prepare_locations = [loc.split(',') for loc in locations]
@@ -43,10 +48,10 @@ def process_location(message, k):
 
     filtered_locations = list(Spots.objects.filter(location__in=filtered_result).values())
 
-    bot.reply_to(message, f"Top {k} locations to visit : {filtered_locations}")
+    bot.reply_to(message, f"Top {len(filtered_locations)} locations to visit :\n")
 
     result = ''
-    for i, loc in enumerate(filtered_locations):
+    for loc in filtered_locations:
         for key, value in loc.items():
             if key == 'photo':
                 photo = f'{value}'
