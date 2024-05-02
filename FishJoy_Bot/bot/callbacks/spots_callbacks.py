@@ -20,7 +20,8 @@ def handle_add_spots(callback):
     sent = bot.send_message(callback.message.chat.id,
                             ('Input spot details in one line, separated with semicolon:\n'
                              '<i>Title</i>;\n'
-                             '<i>Location</i>;\n'
+                             '<i>Location (in format - latitude, longitude. '
+                             '*Hint, you can take this data on google maps)</i>;\n'
                              '<i>Max depth in meters</i>;\n'
                              '<i>Spot category ids:\n'
                              '1 - Lake, 2 - River, 3 - Sea, 4 - Ocean</i>\n'

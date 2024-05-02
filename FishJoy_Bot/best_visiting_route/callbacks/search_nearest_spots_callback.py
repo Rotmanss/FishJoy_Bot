@@ -1,3 +1,6 @@
+from best_visiting_route.build_graph import create_graph
+from best_visiting_route.ant_colony_optimization import ant_colony_optimization, init_values
+
 from bot.father_bot import bot
 
 from best_visiting_route.k_nearest_neighbors import KNearestNeighbours
@@ -22,15 +25,15 @@ def process_k(message):
 
 @bot.message_handler(content_types=['location'])
 def process_location(message, k):
-    try:
-        latitude = message.location.latitude
-        longitude = message.location.longitude
+    # try:
+    latitude = 60.39659  # message.location.latitude
+    longitude = 40.157639  # message.location.longitude
 
-        bot.reply_to(message, f"Received location: Latitude {latitude}, Longitude {longitude}")
-    except AttributeError:
-        bot.reply_to(message,
-                     "You didn't send location. Please press button \"Search nearest spots to me\" and try again.")
-        return
+    #     bot.reply_to(message, f"Received location: Latitude {latitude}, Longitude {longitude}")
+    # except AttributeError:
+    #     bot.reply_to(message,
+    #                  "You didn't send location. Please press button \"Search nearest spots to me\" and try again.")
+    #     return
 
     locations = get_all_locations_coordinates()
     prepare_locations = [loc.split(',') for loc in locations]
@@ -74,7 +77,18 @@ def process_location(message, k):
         bot.send_photo(message.chat.id, photo, caption=result)
         result = ''
 
-    # show_plot(result, (latitude, longitude), normalized_locations)
+    # Building graph and creating distance matrix
+    query_for_graph = list(Spots.objects.filter(location__isnull=False).values('location'))
+    data_for_graph = [(latitude, longitude)]
+    for loc_and_coord in query_for_graph[:int(k)]:
+        lat, lon = loc_and_coord['location'].split(',')
+        data_for_graph.append(tuple(map(float, (lat, lon))))
+
+    distance_matrix = create_graph(data_for_graph)
+    init_values(distance_matrix)
+    ant_colony_optimization()
+
+    # show_plot(knm_result, (latitude, longitude), normalized_locations)
 
 
 def show_plot(result, new_point, points):
