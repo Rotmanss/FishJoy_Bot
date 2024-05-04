@@ -1,4 +1,5 @@
 from bot.forms import BaitsForm
+from bot.go_back import go_back
 from bot.handlers.base_nadler import Handler
 from bot.models import Baits
 from telebot.async_telebot import types
@@ -53,6 +54,9 @@ class BaitsHandler(Handler):
         return list(Baits.objects.all().values())
 
     def add_record(self, message):
+        if go_back(message):
+            return
+
         if not message.photo:
             self.bot.send_message(message.chat.id, 'Provide a photo')
             return

@@ -98,3 +98,5 @@ def ant_colony_optimization():
     best_tour = min(ants, key=lambda ant: tour_length(ant.tour)).tour
     print("QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQBest tour:", best_tour)
     print("QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQTour length:", tour_length(best_tour))
+
+    return best_tour

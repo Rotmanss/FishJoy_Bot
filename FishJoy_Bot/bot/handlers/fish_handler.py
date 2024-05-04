@@ -1,4 +1,5 @@
 from bot.forms import FishForm
+from bot.go_back import go_back
 from bot.handlers.base_nadler import Handler
 from bot.models import Fish, FishCategory
 
@@ -57,6 +58,9 @@ class FishHandler(Handler):
         return list(Fish.objects.all().values())
 
     def add_record(self, message):
+        if go_back(message):
+            return
+
         if not message.photo:
             self.bot.send_message(message.chat.id, 'Provide a photo')
             return

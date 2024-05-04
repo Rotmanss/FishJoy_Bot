@@ -20,7 +20,8 @@ def handle_add_baits(callback):
                             ('Input bait details in one line, separated with semicolon:\n'
                              '<i>Name</i>;\n'
                              '<i>Price in dollars</i>\n'
-                             'Attach photo and make sure details are separated with semicolon.'))
+                             'Attach photo and make sure details are separated with semicolon.\n'
+                             'To return to the main menu type x or X'))
 
     bot.register_next_step_handler(sent, baits_handler.add_record)
 

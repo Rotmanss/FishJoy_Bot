@@ -25,7 +25,8 @@ def handle_add_spots(callback):
                              '<i>Max depth in meters</i>;\n'
                              '<i>Spot category ids:\n'
                              '1 - Lake, 2 - River, 3 - Sea, 4 - Ocean</i>\n'
-                             'Attach photo and make sure details are separated with semicolon.'))
+                             'Attach photo and make sure details are separated with semicolon.\n'
+                             'To return to the main menu type x or X'))
 
     bot.register_next_step_handler(sent, spots_handler.add_record)
 

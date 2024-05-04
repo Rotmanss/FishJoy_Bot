@@ -1,3 +1,4 @@
+from bot.go_back import go_back
 from bot.handlers.base_nadler import Handler
 from bot.models import Spots, SpotCategory
 
@@ -69,6 +70,9 @@ class SpotsHandler(Handler):
         return list(Spots.objects.all().order_by('average_rating').values())
 
     def add_record(self, message):
+        if go_back(message):
+            return
+
         if not message.photo:
             self.bot.send_message(message.chat.id, 'You sent message without photo, press the button \'Add spots\' again')
             return
