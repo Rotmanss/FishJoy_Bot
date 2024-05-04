@@ -53,6 +53,10 @@ class SpotsHandler(Handler):
                     evaluate = types.InlineKeyboardButton("Rating", callback_data=f"evaluate_{id}")
                     keyboard.add(edit, delete, evaluate)
                     continue
+                elif key == 'user_id' and User.objects.filter(username=current_user_id).exists():
+                    evaluate = types.InlineKeyboardButton("Rating", callback_data=f"evaluate_{id}")
+                    keyboard.add(evaluate)
+                    continue
                 elif key == 'user_id':
                     continue
 

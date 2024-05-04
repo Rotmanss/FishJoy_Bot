@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 
 from bot.father_bot import bot
 from bot.forms import EvaluationForm
+from bot.go_back import go_back
 from bot.models import Spots, Evaluation
 
 
@@ -11,13 +12,17 @@ def evaluate(callback):
     spot = Spots.objects.get(pk=spot_id)
 
     if not Evaluation.objects.filter(user_id=User.objects.get(username=str(callback.from_user.id)).id, record_id=spot_id).exists():
-        bot.send_message(callback.message.chat.id, "Please rate this record from 1 to 5, where 5 is very good:")
+        bot.send_message(callback.message.chat.id, "Please rate this record from 1 to 5, where 5 is very good.\n"
+                                                   "To return to the main menu type x")
         bot.register_next_step_handler(callback.message, lambda m: process_rating(m, spot_id))
     else:
         bot.send_message(callback.message.chat.id, f"You can evaluate only once!\nThe average rating is {spot.average_rating:.1f}")
 
 
 def process_rating(message, spot_id):
+    if go_back(message):
+        return
+
     rating = float(message.text)
     record = Spots.objects.get(pk=spot_id)
 

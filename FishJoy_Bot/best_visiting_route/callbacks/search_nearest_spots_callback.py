@@ -16,7 +16,7 @@ from django.db.models import Case, When
 @bot.callback_query_handler(func=lambda call: call.data.startswith('search_nearest_spots'))
 def handle_search_nearest_spots(callback):
     bot.send_message(callback.message.chat.id, "How much nearest location do you want to find?\n"
-                                               "To return to the main menu type x or X")
+                                               "To return to the main menu type x")
 
     bot.register_next_step_handler(callback.message, lambda m: process_k(m))
 
@@ -40,15 +40,15 @@ def process_k(message):
 
 @bot.message_handler(content_types=['location'])
 def process_location(message, k):
-    # try:
-    latitude = 60.39659  # message.location.latitude
-    longitude = 40.157639  # message.location.longitude
+    try:
+        latitude = message.location.latitude
+        longitude = message.location.longitude
 
-    #     bot.reply_to(message, f"Received location: Latitude {latitude}, Longitude {longitude}")
-    # except AttributeError:
-    #     bot.reply_to(message,
-    #                  "You didn't send location. Please press button \"Search nearest spots to me\" and try again.")
-    #     return
+        bot.reply_to(message, f"Received location: Latitude {latitude}, Longitude {longitude}")
+    except AttributeError:
+        bot.reply_to(message,
+                     "You didn't send location. Please press button \"Search nearest spots to me\" and try again.")
+        return
 
     locations = list(Spots.objects.all().values_list('location', flat=True))
     prepare_locations = [loc.split(',') for loc in locations]

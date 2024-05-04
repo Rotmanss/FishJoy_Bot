@@ -23,7 +23,7 @@ def handle_add_fish(callback):
                              '<i>Fish category ids:\n'
                              '1 - Peaceful, 2 - Predatory</i>\n'
                              'Attach photo and make sure details are separated with semicolon.\n'
-                             'To return to the main menu type x or X'))
+                             'To return to the main menu type x'))
 
     bot.register_next_step_handler(sent, fish_handler.add_record)
 
