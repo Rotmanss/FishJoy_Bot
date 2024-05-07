@@ -62,7 +62,7 @@ class FishHandler(Handler):
             return
 
         if not message.photo:
-            self.bot.send_message(message.chat.id, 'Provide a photo')
+            self.bot.send_message(message.chat.id, 'You sent message without photo, press the button \'Add fish\' again')
             return
 
         try:

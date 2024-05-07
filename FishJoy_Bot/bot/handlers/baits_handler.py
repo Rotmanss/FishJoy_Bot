@@ -58,11 +58,11 @@ class BaitsHandler(Handler):
             return
 
         if not message.photo:
-            self.bot.send_message(message.chat.id, 'Provide a photo')
+            self.bot.send_message(message.chat.id, 'You sent message without photo, press the button \'Add baits\' again')
             return
 
         try:
-            input_string = message.caption
+            input_string = message.caption 
 
             pattern = r'([^;]+)'
             result = list(map(str.strip, re.findall(pattern, input_string)))

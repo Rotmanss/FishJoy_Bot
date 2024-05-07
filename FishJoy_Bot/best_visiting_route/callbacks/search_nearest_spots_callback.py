@@ -15,7 +15,7 @@ from django.db.models import Case, When
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith('search_nearest_spots'))
 def handle_search_nearest_spots(callback):
-    bot.send_message(callback.message.chat.id, "How much nearest location do you want to find?\n"
+    bot.send_message(callback.message.chat.id, "How many nearest location do you want to find?\n"
                                                "To return to the main menu type x")
 
     bot.register_next_step_handler(callback.message, lambda m: process_k(m))
