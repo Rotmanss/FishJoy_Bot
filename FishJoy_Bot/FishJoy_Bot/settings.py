@@ -152,7 +152,7 @@ LOGGING = {
             "style": "{",
         },
     },
-    "views": {
+    "handlers": {
         "console": {
             "level": LOG_LEVEL,
             "class": "logging.StreamHandler",
@@ -160,12 +160,12 @@ LOGGING = {
         },
     },
     "root": {
-      "views": ["console"],
+      "handlers": ["console"],
       "level": LOG_LEVEL
     },
     "loggers": {
         "django": {
-            "views": ["console"],
+            "handlers": ["console"],
             "propagate": True,
         },
     },

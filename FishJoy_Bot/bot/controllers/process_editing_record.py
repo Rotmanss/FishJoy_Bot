@@ -43,7 +43,7 @@ class EditRecord:
         field = self.field_name[field_title]
         form = self.validation_form({f'{field}': message.text})
 
-        if form.is_valid():
+        if form.is_valid() and message.text is not None:
             new_value = message.text
             if field == 'spot_category':
                 new_value = SpotCategory.objects.get(pk=new_value)

@@ -1,10 +1,7 @@
-from django.db import models
-
 from django.contrib.auth import get_user_model
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import Avg
-from django.urls import reverse
 
 
 class Spots(models.Model):
@@ -116,3 +113,12 @@ class Evaluation(models.Model):
         record = Spots.objects.get(pk=record_id)
         record.average_rating = average_rating
         record.save()
+
+
+class WeatherIcons(models.Model):
+    icon_code = models.CharField(verbose_name='Icon code')
+    icon_image = models.ImageField(upload_to="photos/weather/%Y/%m/%d/")
+
+    class Meta:
+        verbose_name = 'Weather icon'
+        verbose_name_plural = 'Weather icons'

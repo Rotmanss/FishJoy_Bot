@@ -30,7 +30,7 @@ class AddRecord:
         field = self.field_name[index]
         form = self.validation_form({f'{field}': message.text})
 
-        if form.is_valid():
+        if form.is_valid() and message.text is not None:
             self.input_data[field] = message.text.strip()
 
             next_index = index + 1
