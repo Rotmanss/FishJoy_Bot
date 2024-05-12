@@ -6,11 +6,11 @@ class Handler:
     def _get_from_db():
         pass
 
-    def add_record(self, message):
+    def add_record(self, data):
         pass
 
-    def edit_record(self, message, record_id, field_name, new_value):
+    def edit_record(self, record_id, field_name, new_value, field_title):
         pass
 
-    def delete_record(self, message, record_id):
+    def delete_record(self, record_id):
         pass

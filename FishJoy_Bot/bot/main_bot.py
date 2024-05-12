@@ -9,17 +9,17 @@ from django.conf import settings
 from django.contrib.auth.models import User
 
 
-from bot.callbacks.spots_callbacks import handle_get_spots, handle_add_spots, handle_edit_spots, handle_delete_spots
-from bot.callbacks.fish_callbacks import handle_get_fish, handle_add_fish, handle_edit_fish, handle_delete_fish
-from bot.callbacks.baits_callbacks import handle_get_baits, handle_add_baits
-from bot.callbacks.feedback_callback import handle_feedback
-from bot.callbacks.spots_evaluation import evaluate
+from bot.controllers.spots_callbacks import handle_get_spots, handle_add_spots, handle_edit_spots, handle_delete_spots
+from bot.controllers.fish_callbacks import handle_get_fish, handle_add_fish, handle_edit_fish, handle_delete_fish
+from bot.controllers.baits_callbacks import handle_get_baits, handle_add_baits
+from bot.controllers.feedback_callback import handle_feedback
+from bot.controllers.spots_evaluation import evaluate
 
 
 from weather.weather_callback import handle_weather
 from map.map_callback import handle_map
 
-from best_visiting_route.callbacks import search_nearest_spots_callback
+from best_visiting_route.controllers import search_nearest_spots_callback
 
 
 telebot.logger.setLevel(settings.LOG_LEVEL)

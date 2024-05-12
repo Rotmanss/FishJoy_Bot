@@ -1,5 +1,5 @@
 from bot.father_bot import bot
-from bot.handlers.feedback_handler import feedback
+from bot.views.feedback_handler import feedback
 
 
 @bot.callback_query_handler(func=lambda call: call.data == 'feedback')

@@ -1,16 +1,16 @@
 import random
 import numpy as np
-
+from matplotlib import pyplot as plt, animation
 
 # Distance between each pair of nodes
-# distance_matrix = [[0, 123, 248],
-#                    [123, 0, 113],
-#                    [248, 113, 0]]
-# num_nodes = 3
+distance_matrix = [[0, 123, 248],
+                   [123, 0, 113],
+                   [248, 113, 0]]
+num_nodes = 3
 
-distance_matrix = []
+# distance_matrix = []
 
-num_nodes = 0
+# num_nodes = 0
 
 num_ants = 5
 alpha = 1.0  # Pheromone importance
@@ -19,7 +19,9 @@ evaporation_rate = 0.5
 pheromone_deposit = 1.0
 num_iterations = 5000
 
-pheromone_level = []
+# pheromone_level = []
+pheromone_level = [[1.0] * num_nodes for _ in range(num_nodes)]
+ants = []
 
 
 def init_values(value):
@@ -80,6 +82,7 @@ class Ant:
 
 def ant_colony_optimization():
     for iteration in range(num_iterations):
+        global ants
         ants = [Ant() for _ in range(num_ants)]
 
         for ant in ants:
@@ -100,3 +103,6 @@ def ant_colony_optimization():
     print("QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQTour length:", tour_length(best_tour))
 
     return best_tour
+
+
+# print(ant_colony_optimization())

@@ -1,6 +1,8 @@
+import functools
+
 from best_visiting_route.build_graph import create_graph
 from best_visiting_route.ant_colony_optimization import ant_colony_optimization, init_values
-from best_visiting_route.callbacks.print_best_visiting_route import print_best_visiting_route
+from best_visiting_route.controllers.print_best_visiting_route import print_best_visiting_route
 
 from bot.father_bot import bot
 
@@ -28,10 +30,14 @@ def process_k(message):
     k = message.text
     try:
         if int(k) > 10:
-            bot.send_message(message.chat.id, "Currently we support search for maximum 10 nearest locations to you.")
+            sent = bot.send_message(message.chat.id,
+                                    "Currently we support search for maximum 10 nearest locations to you."
+                                    "Select number between 1 and 10")
+            bot.register_next_step_handler(sent, functools.partial(process_k))
             return
     except ValueError:
-        bot.send_message(message.chat.id, "Your input is invalid. Please try again.")
+        sent = bot.send_message(message.chat.id, 'You inputted data incorrectly. Try again.')
+        bot.register_next_step_handler(sent, functools.partial(process_k))
         return
 
     bot.send_message(message.chat.id, "Send me your location using telegram")
@@ -46,8 +52,8 @@ def process_location(message, k):
 
         bot.reply_to(message, f"Received location: Latitude {latitude}, Longitude {longitude}")
     except AttributeError:
-        bot.reply_to(message,
-                     "You didn't send location. Please press button \"Search nearest spots to me\" and try again.")
+        sent = bot.reply_to(message, "You didn't send location. Please try again.")
+        bot.register_next_step_handler(sent, functools.partial(process_location, k=k))
         return
 
     locations = list(Spots.objects.all().values_list('location', flat=True))

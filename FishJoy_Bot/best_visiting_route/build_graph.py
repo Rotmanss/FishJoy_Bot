@@ -26,12 +26,13 @@ def create_graph(coordinates):
         diagonal_index += 1
         distance_matrix.append(node_distances)
 
-        # draw_graph(G)
+    # draw_graph(G)
 
     return distance_matrix
 
 
 def draw_graph(G):
+    # TODO my_layout no random anymore
     pos = nx.spring_layout(G)
     nx.draw(G, pos, with_labels=True, node_size=200, node_color='skyblue', font_size=10, font_weight='bold')
     edge_labels = nx.get_edge_attributes(G, 'weight')
