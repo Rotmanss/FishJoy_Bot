@@ -1,5 +1,5 @@
 class Handler:
-    def get_all_records(self, current_user_id):
+    def get_all_records(self, current_user_id, k):
         pass
 
     @staticmethod

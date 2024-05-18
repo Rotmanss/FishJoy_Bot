@@ -12,10 +12,10 @@ class FishHandler(Handler):
     def __init__(self, message):
         self.message = message
 
-    def get_all_records(self, current_user_id):
+    def get_all_records(self, current_user_id, k):
         result = ''
         photo = 'AgACAgIAAxkBAAPmZgp3cwABhLE4BMdIQaTVrttbKafQAALZ4zEbOEZQSGkjdNm_ZtTWAQADAgADcwADNAQ'
-        for fish in self._get_from_db():
+        for fish in self._get_from_db(k):
             for key, value in fish.items():
                 if key == 'photo':
                     photo = f'{value}'
@@ -51,8 +51,8 @@ class FishHandler(Handler):
             result = ''
 
     @staticmethod
-    def _get_from_db():
-        return list(Fish.objects.all().values())
+    def _get_from_db(k):
+        return list(Fish.objects.all()[:k].values())
 
     def add_record(self, data):
         fish = Fish.objects.create(name=data['name'],

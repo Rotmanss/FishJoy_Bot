@@ -1,5 +1,3 @@
-# TODO handle how much records user can get at once. For example they can be sorted by rating or other fields
-
 import datetime
 import pytz
 
@@ -15,7 +13,6 @@ def utc_to_european_time(utc_timestamp):
     # Localize UTC datetime object
     localized_utc_datetime = utc_timezone.localize(utc_datetime)
 
-    # TODO to get user's location
     european_timezone = pytz.timezone('Europe/Warsaw')
     european_datetime = localized_utc_datetime.astimezone(european_timezone)
 

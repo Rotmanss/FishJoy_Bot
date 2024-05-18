@@ -12,10 +12,10 @@ class SpotsHandler(Handler):
     def __init__(self, message):
         self.message = message
 
-    def get_all_records(self, current_user_id):
+    def get_all_records(self, current_user_id, k):
         result = ''
-        photo = 'AgACAgIAAxkBAAPmZgp3cwABhLE4BMdIQaTVrttbKafQAALZ4zEbOEZQSGkjdNm_ZtTWAQADAgADcwADNAQ'
-        for spot in self._get_from_db():
+        photo = 'AgACAgIAAxkBAAPmZgp3cwABhLE4BMdIQaTVrttbKafQAALZ4zEbOEZQSGkjdNm_ZtTWAQADAgADcwADNAQ'  # white color
+        for spot in self._get_from_db(k):
             for key, value in spot.items():
                 if key == 'photo':
                     photo = f'{value}'
@@ -65,8 +65,8 @@ class SpotsHandler(Handler):
             result = ''
 
     @staticmethod
-    def _get_from_db():
-        return list(Spots.objects.all().order_by('average_rating').values())
+    def _get_from_db(k):
+        return list(Spots.objects.all().order_by('average_rating')[:k].values())
 
     def add_record(self, data):
         spot = Spots.objects.create(title=data['title'],

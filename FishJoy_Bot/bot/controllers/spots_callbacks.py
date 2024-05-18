@@ -1,3 +1,5 @@
+import functools
+
 import telebot
 
 from bot.controllers.process_editing_record import EditRecord
@@ -11,8 +13,21 @@ from bot.controllers.process_adding_record import AddRecord
 
 @bot.callback_query_handler(func=lambda call: call.data == 'spots')
 def handle_get_spots(callback):
-    spots_handler = SpotsHandler(callback.message)
-    spots_handler.get_all_records(callback.from_user.id)
+    bot.send_message(callback.message.chat.id, f"How much spots do you wan to see ?\nInput number greater than 0.")
+    bot.register_next_step_handler(callback.message, lambda m: get_k_records(m))
+
+
+def get_k_records(message):
+    try:
+        k = int(message.text)
+        if k > 0:
+            spots_handler = SpotsHandler(message)
+            spots_handler.get_all_records(message.chat.id, k)
+        else:
+            raise ValueError
+    except ValueError:
+        sent = bot.send_message(message.chat.id, f"Your input is incorrect, please input number greater than 0.")
+        bot.register_next_step_handler(sent, functools.partial(get_k_records))
 
 
 @bot.callback_query_handler(func=lambda call: call.data == 'add_spot')
