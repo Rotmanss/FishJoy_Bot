@@ -1,108 +1,78 @@
-import random
 import numpy as np
-from matplotlib import pyplot as plt, animation
-
-# Distance between each pair of nodes
-distance_matrix = [[0, 123, 248],
-                   [123, 0, 113],
-                   [248, 113, 0]]
-num_nodes = 3
-
-# distance_matrix = []
-
-# num_nodes = 0
-
-num_ants = 5
-alpha = 1.0  # Pheromone importance
-beta = 2.0  # Distance importance
-evaporation_rate = 0.5
-pheromone_deposit = 1.0
-num_iterations = 5000
-
-# pheromone_level = []
-pheromone_level = [[1.0] * num_nodes for _ in range(num_nodes)]
-ants = []
 
 
-def init_values(value):
-    global distance_matrix
-    distance_matrix = value
-    print('QQQQQQQQQQQQQQQQQQQQQQQQQQQQQ matrix\n', np.array(distance_matrix))
+class AntColonyOptimization:
+    def __init__(self, distance_matrix, num_ants, num_iterations, alpha=1.0, beta=5.0, rho=0.5, pheromone_deposit=100):
+        self.distance_matrix = distance_matrix
+        self.num_nodes = len(distance_matrix)
+        self.num_ants = num_ants
+        self.num_iterations = num_iterations
+        self.alpha = alpha
+        self.beta = beta
+        self.rho = rho
+        self.pheromone_deposit = pheromone_deposit
+        self.pheromone_matrix = np.ones((self.num_nodes, self.num_nodes))
+        self.best_route = None
+        self.best_distance = float('inf')
 
-    global num_nodes
-    num_nodes = len(value[0])
+    def run(self):
+        for _ in range(self.num_iterations):
+            all_routes = self.construct_solutions()
+            self.update_pheromones(all_routes)
+            self.update_best_route(all_routes)
+        return self.best_route
 
-    global pheromone_level
-    pheromone_level = [[1.0] * num_nodes for _ in range(num_nodes)]
+    def construct_solutions(self):
+        all_routes = []
+        for _ in range(self.num_ants):
+            route = self.construct_solution()
+            all_routes.append(route)
+        return all_routes
 
+    def construct_solution(self):
+        route = [0]
+        visited = set(route)
+        for _ in range(self.num_nodes - 1):
+            current_node = route[-1]
+            next_node = self.select_next_node(current_node, visited)
+            route.append(next_node)
+            visited.add(next_node)
+        route.append(0)  # return to the start
+        return route
 
-def tour_length(tour):
-    total_distance = 0
-    for i in range(len(tour) - 1):
-        total_distance += distance_matrix[tour[i]][tour[i + 1]]
-    total_distance += distance_matrix[tour[-1]][tour[0]]  # Return to the starting node
-    return total_distance
+    def select_next_node(self, current_node, visited):
+        probabilities = np.zeros(self.num_nodes)
+        for next_node in range(self.num_nodes):
+            if next_node not in visited:
+                pheromone = self.pheromone_matrix[current_node][next_node] ** self.alpha
+                visibility = (1.0 / self.distance_matrix[current_node][next_node]) ** self.beta
+                probabilities[next_node] = pheromone * visibility
 
+        if probabilities.sum() == 0:
+            remaining_nodes = list(set(range(self.num_nodes)) - visited)
+            next_node = np.random.choice(remaining_nodes)
+        else:
+            probabilities /= probabilities.sum()
+            next_node = np.random.choice(range(self.num_nodes), p=probabilities)
+        return next_node
 
-class Ant:
-    def __init__(self):
-        self.visited = [False] * num_nodes
-        self.tour = []
+    def update_pheromones(self, all_routes):
+        self.pheromone_matrix *= (1 - self.rho)
+        for route in all_routes:
+            route_distance = self.calculate_route_distance(route)
+            pheromone_contribution = self.pheromone_deposit / route_distance
+            for i in range(len(route) - 1):
+                self.pheromone_matrix[route[i]][route[i + 1]] += pheromone_contribution
 
-    def choose_next_node(self, current_node):
-        unvisited_nodes = [i for i in range(num_nodes) if not self.visited[i]]
-        probabilities = [0] * len(unvisited_nodes)
-        total_probability = 0
+    def calculate_route_distance(self, route):
+        distance = 0
+        for i in range(len(route) - 1):
+            distance += self.distance_matrix[route[i]][route[i + 1]]
+        return distance
 
-        for i, node in enumerate(unvisited_nodes):
-            pheromone = pheromone_level[current_node][node]
-            distance = distance_matrix[current_node][node]
-            probabilities[i] = (pheromone ** alpha) * ((1 / distance) ** beta)
-            total_probability += probabilities[i]
-
-        # Roulette wheel selection
-        rand = random.uniform(0, total_probability)
-        cumulative_probability = 0
-        for i, prob in enumerate(probabilities):
-            cumulative_probability += prob
-            if cumulative_probability >= rand:
-                return unvisited_nodes[i]
-
-    def tour_construction(self):
-        start_node = random.randint(0, num_nodes - 1)
-        self.tour.append(start_node)
-        self.visited[start_node] = True
-
-        while False in self.visited:
-            current_node = self.tour[-1]
-            next_node = self.choose_next_node(current_node)
-            self.tour.append(next_node)
-            self.visited[next_node] = True
-
-
-def ant_colony_optimization():
-    for iteration in range(num_iterations):
-        global ants
-        ants = [Ant() for _ in range(num_ants)]
-
-        for ant in ants:
-            ant.tour_construction()
-
-        # Update pheromone levels
-        for i in range(num_nodes):
-            for j in range(num_nodes):
-                if i != j:
-                    pheromone_level[i][j] *= (1 - evaporation_rate)  # Evaporation
-                    for ant in ants:
-                        if j in ant.tour and i in ant.tour:
-                            pheromone_level[i][j] += pheromone_deposit / tour_length(ant.tour)
-
-    # Find the best tour
-    best_tour = min(ants, key=lambda ant: tour_length(ant.tour)).tour
-    print("QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQBest tour:", best_tour)
-    print("QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQTour length:", tour_length(best_tour))
-
-    return best_tour
-
-
-# print(ant_colony_optimization())
+    def update_best_route(self, all_routes):
+        for route in all_routes:
+            route_distance = self.calculate_route_distance(route)
+            if route_distance < self.best_distance:
+                self.best_distance = route_distance
+                self.best_route = route

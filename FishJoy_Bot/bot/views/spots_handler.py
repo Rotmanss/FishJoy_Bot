@@ -39,7 +39,9 @@ class SpotsHandler(Handler):
                     value = f'{value:.1f}'
 
                 elif key == 'location':
-                    value = "{:.1f}°, {:.1f}°".format(*eval(value))
+                    lat, lon = value.split(',')
+                    lat, lon = float(lat), float(lon)
+                    value = "{:.1f}°, {:.1f}°".format(lat, lon)
 
                 keyboard = types.InlineKeyboardMarkup(row_width=2)
                 if key == 'user_id' and str(value) == str(User.objects.get(username=current_user_id).id):
@@ -66,7 +68,7 @@ class SpotsHandler(Handler):
 
     @staticmethod
     def _get_from_db(k):
-        return list(Spots.objects.all().order_by('average_rating')[:k].values())
+        return list(Spots.objects.all().order_by('-average_rating')[:k].values())
 
     def add_record(self, data):
         spot = Spots.objects.create(title=data['title'],

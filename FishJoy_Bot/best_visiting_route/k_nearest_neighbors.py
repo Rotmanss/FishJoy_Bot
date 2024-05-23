@@ -4,7 +4,7 @@ from best_visiting_route.calculate_distance import haversine
 class KNearestNeighbours:
     def __init__(self, k=3):
         self.k = k
-        self.point = None
+        self.points = None
 
     def fit(self, points):
         self.points = points
